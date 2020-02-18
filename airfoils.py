@@ -3,7 +3,7 @@
 #                                                   #
 # author: Guillaume Chauvat                         #
 # email: chauvat@kth.se                             #
-# created 2020-02-10, last modification: 2020-02-14 #
+# created 2020-02-10, last modification: 2020-02-18 #
 #===================================================#
 
 import numpy as np
@@ -41,7 +41,6 @@ class Airfoil:
         lengths = np.sqrt(np.diff(self.x)**2 + np.diff(self.y)**2)
         s = np.concatenate(([0], lengths)).cumsum()  # curvilinear abscissa
         t = s/s[-1]  # normalize
-        t0 = t
         
         # compute the new curvilinear abscissa and iterate until convergence
         tc1 = np.linspace(0, 1, self.n)
@@ -184,7 +183,7 @@ class Airfoil:
             (taux, tauy) = self.tangent(t1)
             f1 = taux*(x1-x0)+tauy*(y1-y0)
             if self.verbose:
-                print("iteration " + str(i) + ", t = " + str(t1) + ", (x1-x0) = (" + str(x1-x0) + ", " + str(y1-y0) + "), tau = (" + str(taux) + ", " + str(tauy) + "), f = " + str(f1))
+                print("iteration " + str(i) + ", t = " + str(t1) + ", f = " + str(f1) + ", err = " + str(err))
                 i = i+1
         return (t1, x1, y1)
 
