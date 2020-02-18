@@ -75,37 +75,26 @@ class Airfoil:
 
     """
     Returns the normalized curvilinear abscissa corresponding to a x/c location on the airfoil (where c is the chord).
-    The last argument indicates which side of the airfoil must be returned, since there are always two possibilities for 0 < x < 1.
+    The choice of t0 is important since there are always two possibilities for 0 < x < 1.
     
     x0: location where the curvilinear abscissa must be computed
     t0: first guess of the location
-    dt0: initial step size for iterating.
     """
-    def curvilinear_abscissa(self, x0, t0=0.8, dt0=0.1, tol=1e-13):
-        # We want to interpolate t as a function of x, but this only works if the function x: t -> x(t) is bijective, which is not the case for an airfoil.
-        # Instead, we can look for x iteratively. We also avoid running into problems where x'(t) is very small (in which case interpolating t as a function of x generates a lot of oscillations).
-        # make sure t1 is in [0, 1]
-        t1 = t0 + dt0
-        if t1>1:
-            t1 = t0 - dt0
-        err = 1
-        
-        # initial values
+    def curvilinear_abscissa(self, x0, t0, tol=1e-13):
+        # initial value
         f0 = self.x_int(t0)-x0
-        f1 = self.x_int(t1)-x0
         
-        # iterate with a secant method
+        # iterate with Newton-Raphson
         i = 0
+        err = 1
         if self.verbose:
-            print("Computing t using the secant method...")
+            print("Computing t...")
         while err > tol:
-            t2 = t1 - f1*((t1-t0)/(f1-f0))
-            f2 = self.x_int(t2)-x0
-            f0 = f1
-            f1 = f2
-            t0 = t1
-            t1 = t2
+            df = self.dx_int(t0)
+            t1 = t0 - f0/df
+            f0 = self.x_int(t1)-x0
             err = abs(t1-t0)
+            t0 = t1
             if self.verbose:
                 print("iteration " + str(i) + ", err = " + str(err))
                 i = i+1
@@ -187,6 +176,7 @@ class Airfoil:
                 i = i+1
         return (t1, x1, y1)
 
+    
     """
     checks whether the airfoil is described in the trigonometric direction
     """
