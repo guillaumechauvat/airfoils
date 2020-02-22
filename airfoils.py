@@ -8,8 +8,6 @@
 
 import numpy as np
 from scipy import interpolate
-import matplotlib.pyplot as plt
-import neksuite as nek
 
 
 """
