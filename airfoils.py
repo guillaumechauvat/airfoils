@@ -184,3 +184,12 @@ class Airfoil:
         dy1 = self.y[1]-self.y[0]
         dy2 = self.y[-2]-self.y[0]
         return dx1*dy2-dx2*dy1 > 0
+
+"""
+rotates a set of points around a point (xr, yr)
+"""
+def rotate(x, y, angle, xr, yr):
+    x1 = xr + (x-xr)*np.cos(angle) + (y-yr)*np.sin(angle)
+    y1 = yr - (x-xr)*np.sin(angle) + (y-yr)*np.cos(angle)
+    return (x1, y1)
+    
