@@ -84,10 +84,10 @@ class Airfoil:
         
         # iterate with Newton-Raphson
         i = 0
-        err = 1
+        err = 1.0
         if self.verbose:
             print("Computing t...")
-        while err > tol:
+        while np.any(err > tol):
             df = self.dx_int(t0)
             t1 = t0 - f0/df
             f0 = self.x_int(t1)-x0
