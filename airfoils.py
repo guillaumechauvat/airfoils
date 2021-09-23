@@ -3,18 +3,19 @@
 #                                                   #
 # author: Guillaume Chauvat                         #
 # email: chauvat@kth.se                             #
-# created 2020-02-10, last modification: 2020-02-18 #
+# created 2020-02-10, last modification: 2021-09-23 #
 #===================================================#
 
 import numpy as np
 from scipy import interpolate
 
 
-"""
-Class representing an airfoil as closed 2D curve that can be interpolated in different ways
-"""
 class Airfoil:
-
+    """
+    Class representing an airfoil as closed 2D curve {t -> (x(t), y(t)) for t in [0, 1]} using cubic splines.
+    This allows for smooth interpolation of the coordinates as well as their derivatives.
+    """
+    
     def __init__(self, x, y, n=10000, tol=1e-13, verbose=False):
         self.n = n
         self.tol = tol
@@ -29,12 +30,13 @@ class Airfoil:
         self.d2x_int = self.x_int.derivative(2)
         self.d2y_int = self.y_int.derivative(2)
         self.trigonometric_direction = self.is_trigonometric()
-        
-    
-    """
-    Computes the normalized curvilinear abscissas t corresponding to the coordinates of the airfoil.
-    """
+
+
     def compute_abscissas(self):
+        """
+        Computes the normalized curvilinear abscissas t corresponding to the coordinates of the airfoil.
+        """
+        
         # first, approximate the curve by linear interpolation to get an approximation of the curvilinear abscissa.
         lengths = np.sqrt(np.diff(self.x)**2 + np.diff(self.y)**2)
         s = np.concatenate(([0], lengths)).cumsum()  # curvilinear abscissa
@@ -59,26 +61,28 @@ class Airfoil:
             err = np.linalg.norm(t_new-t)
             t = t_new
             if self.verbose:
-                print("iteration", i, "err =", err)
+                print(f"iteration {i}, err = {err}")
                 i = i + 1
         return (t, s1[-1])
         
 
-    """
-    Interpolates x: t->x(t) and y: t->y(t) at points in the array tc.
-    """
     def pos(self, tc):
+        """
+        Interpolates x: t->x(t) and y: t->y(t) at points in the array tc.
+        """
+        
         return (self.x_int(tc), self.y_int(tc))
 
 
-    """
-    Returns the normalized curvilinear abscissa corresponding to a x/c location on the airfoil (where c is the chord).
-    The choice of t0 is important since there are always two possibilities for 0 < x < 1.
-    
-    x0: location where the curvilinear abscissa must be computed
-    t0: first guess of the location
-    """
     def curvilinear_abscissa(self, x0, t0, tol=1e-13):
+        """
+        Returns the normalized curvilinear abscissa corresponding to a x/c location on the airfoil (where c is the chord).
+        The choice of t0 is important since there are always two possibilities for 0 < x < 1.
+        
+        x0: location where the curvilinear abscissa must be computed
+        t0: first guess of the location
+        """
+        
         # initial value
         f0 = self.x_int(t0)-x0
         
@@ -94,15 +98,16 @@ class Airfoil:
             err = abs(t1-t0)
             t0 = t1
             if self.verbose:
-                print("iteration " + str(i) + ", err = " + str(err))
+                print(f"iteration {i}, err = {err}")
                 i = i+1
         return t1
 
     
-    """
-    returns the normal vector to the surface at a given point
-    """
     def normal(self, t0):
+        """
+        returns the normal vector to the surface at a given point
+        """
+        
         dx = self.dx_int(t0)
         dy = self.dy_int(t0)
         l = np.sqrt(dx**2+dy**2)
@@ -114,10 +119,11 @@ class Airfoil:
         return (nx, ny)
     
     
-    """
-    returns the tangent vector to the surface at a given point
-    """
     def tangent(self, t0):
+        """
+        returns the tangent vector to the surface at a given point
+        """
+        
         dx = self.dx_int(t0)
         dy = self.dy_int(t0)
         l = np.sqrt(dx**2+dy**2)
@@ -126,10 +132,11 @@ class Airfoil:
         return (nx, ny)
 
     
-    """
-    returns the derivative of the tangent vector to the surface at a given point
-    """
     def dtangent(self, t0):
+        """
+        returns the derivative of the tangent vector to the surface at a given point
+        """
+        
         # ||dx**2 + dy**2|| is approximately equal to self.length, but we want to be very accurate and account for small deviations here
         # so speed ~ self.length and fact1 << 1/self.length
         dx = self.dx_int(t0)
@@ -141,10 +148,11 @@ class Airfoil:
         return (d2x/speed-fact1*dx, d2y/speed-fact1*dy)
     
     
-    """
-    returns the closest point (x, y) on the surface to an arbitrary point (x0, y0)
-    """
     def closest(self, x0, y0, t0=0.5, tol=1e-13, alpha=1):
+        """
+        returns the closest point (x, y) on the surface to an arbitrary point (x0, y0)
+        """
+            
         # t0 is the starting point
         # the variable alpha can be chosen between 0 and 1 to sacrifice speed for stability
         # find a zero of the function f: t -> (tangent(t)|x(t)-x0)
@@ -157,7 +165,7 @@ class Airfoil:
         err = 1
         i = 0
         if self.verbose:
-            print("Projecting point (" + str(x0) + ", " + str(y0) + ") on airfoil...")
+            print(f"Projecting point ({x0}, {y0}) on airfoil...")
         while err > tol:
             (dtaux, dtauy) = self.dtangent(t1)
             dx = self.dx_int(t1)
@@ -170,25 +178,28 @@ class Airfoil:
             (taux, tauy) = self.tangent(t1)
             f1 = taux*(x1-x0)+tauy*(y1-y0)
             if self.verbose:
-                print("iteration " + str(i) + ", t = " + str(t1) + ", f = " + str(f1) + ", err = " + str(err))
+                print(f"iteration {i}, t = {t1}, f = {f1}, err = {err}")
                 i = i+1
         return (t1, x1, y1)
 
     
-    """
-    checks whether the airfoil is described in the trigonometric direction
-    """
     def is_trigonometric(self):
+        """
+        checks whether the airfoil is described in the trigonometric direction
+        """
+            
         dx1 = self.x[1]-self.x[0]
         dx2 = self.x[-2]-self.x[0]
         dy1 = self.y[1]-self.y[0]
         dy2 = self.y[-2]-self.y[0]
         return dx1*dy2-dx2*dy1 > 0
 
-"""
-rotates a set of points around a point (xr, yr)
-"""
+
 def rotate(x, y, angle, xr, yr):
+    """
+    rotates a set of points around a point (xr, yr)
+    """
+    
     x1 = xr + (x-xr)*np.cos(angle) + (y-yr)*np.sin(angle)
     y1 = yr - (x-xr)*np.sin(angle) + (y-yr)*np.cos(angle)
     return (x1, y1)
