@@ -200,11 +200,9 @@ class Airfoil:
         checks whether the airfoil is described in the trigonometric direction
         """
 
-        dx1 = self.x[1]-self.x[0]
-        dx2 = self.x[-2]-self.x[0]
-        dy1 = self.y[1]-self.y[0]
-        dy2 = self.y[-2]-self.y[0]
-        return dx1*dy2-dx2*dy1 > 0
+        x, y = self.x, self.y
+        area = 0.5 * np.sum(x[:-1]*y[1:] - x[1:]*y[:-1])
+        return area > 0
 
 
 def rotate(x, y, angle, xr, yr):
