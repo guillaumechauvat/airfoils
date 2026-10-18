@@ -28,22 +28,23 @@ t3p = airfoil.curvilinear_abscissa(0.3, 0.75)  # 0.65480812484917
 The coordinates for a given parameter `t` can be queried using `pos()`:
 ```py
 # suction side
-x3s, y3s = airfoil.pos(t3s)  # 0.3, 0.0771686
+p3s = airfoil.pos(t3s)  # array([0.3      , 0.0771686])
 
 # pressure side
-x3p, y3p = airfoil.pos(t3p)  # 0.3, -0.03793124
+p3p = airfoil.pos(t3p)  # array([ 0.3       , -0.03793124])
+
+# or both at the same time:
+p3 = airfoil.normal([t3s, t3p])  # array([[ 0.3       ,  0.0771686 ],
+                                 #        [ 0.3       , -0.03793124]])
 ```
 
-The normal vector can also be calculated:
+Normal vectors can also be calculated:
 ```py
-# suction side
-nx3s, ny3s = airfoil.normal(t3s)  # -0.08282943442805163, 0.9965637384494426
-
-# pressure side
-nx3p, ny3p = airfoil.normal(t3p)  # -0.0349763290619618, -0.9993881410169672
+n3 = airfoil.normal([t3s, t3p])  # array([[-0.08282943,  0.99656374],
+                                 #        [-0.03497633, -0.99938814]])
 ```
 
 Finally, given a point sufficiently close to the airfoil, the closest point on the airfoil can be found with `closest()`:
 ```py
-t_closest, x_closest, y_closest = airfoil.closest(0.1, 0.04)  # 0.4479957791950058, 0.09823843, 0.04730137
+t_closest = airfoil.closest(0.1, 0.04)  # 0.4479957791950058
 ```
