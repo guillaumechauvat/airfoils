@@ -46,5 +46,11 @@ n3 = airfoil.normal([t3s, t3p])  # array([[-0.08282943,  0.99656374],
 
 Finally, given a point sufficiently close to the airfoil, the closest point on the airfoil can be found with `closest()`:
 ```py
-t_closest = airfoil.closest(0.1, 0.04)  # 0.4479957791950058
+t_closest = airfoil.closest(0.1, 0.04, 0.25)  # array([0.4479957791950058])
+airfoil.pos(t_closest)  # array([[0.09823843, 0.04730137]])
+# be carteful about starting point:
+t_closest = airfoil.closest(0.2, 0.07, 0.5)  # array([0.5040716]) - wrong!
+t_closest = airfoil.closest(0.2, 0.07, 0.25)  # array([0.39682072]) - ok
+airfoil.pos(t_closest)  # array([[0.2005281 , 0.06637495]])
+
 ```

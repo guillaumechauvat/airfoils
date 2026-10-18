@@ -153,7 +153,7 @@ class Airfoil:
         fact1 = (dx*d2x+dy*d2y)/speed**3
         return np.stack([d2x/speed-fact1*dx, d2y/speed-fact1*dy], axis=-1)
 
-    def closest(self, x0, y0, t0=0.5, tol=1e-13, alpha=1):
+    def closest(self, x0, y0, t0, tol=1e-13, alpha=1):
         """
         returns the closest point (x, y) on the surface to an arbitrary point (x0, y0)
         """
