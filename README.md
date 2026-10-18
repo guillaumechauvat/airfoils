@@ -1,5 +1,6 @@
 # airfoils
-Airfoil meshing tools
+Parametrises an airfoil as a smooth spline given input coordinate points.
+The coordinates must run from trailing edge to trailing edge.
 
 ## Example usage:
 
