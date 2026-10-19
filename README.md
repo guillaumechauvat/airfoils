@@ -25,6 +25,11 @@ t3s = airfoil.curvilinear_abscissa(0.3, 0.25)  # 0.34761588340824057
 t3p = airfoil.curvilinear_abscissa(0.3, 0.75)  # 0.65480812484917
 ```
 
+The leading edge position can be found directly via `le()`, which looks for a horizontal normal:
+```py
+tle = airfoil.le()
+```
+
 The coordinates for a given parameter `t` can be queried using `pos()`:
 ```py
 # suction side
