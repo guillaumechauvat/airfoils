@@ -5,7 +5,7 @@ The coordinates must run from trailing edge to trailing edge.
 ## Example usage:
 
 ```py
-import airfoils as af
+import airfoil_spline as af
 
 # coordinates of the NACA 65(1)-412 from https://m-selig.ae.illinois.edu/ads/coord/naca651412.dat
 x = [1, 0.95, 0.901, 0.851, 0.801, 0.751, 0.701, 0.651, 0.601, 0.55, 0.5, 0.45, 0.399, 0.349, 0.298, 0.249, 0.198, 0.148, 0.097, 0.072, 0.048, 0.023, 0.011, 0.006, 0.003, 0, 0.007, 0.009, 0.014, 0.027, 0.052, 0.078, 0.103, 0.152, 0.202, 0.252, 0.302, 0.351, 0.401, 0.45, 0.5, 0.55, 0.599, 0.649, 0.699, 0.749, 0.799, 0.849, 0.899, 0.95, 1]
