@@ -6,7 +6,7 @@
 #===================================================#
 
 import numpy as np
-from scipy import interpolate
+from scipy import interpolate, optimize
 
 
 class Airfoil:
@@ -194,6 +194,22 @@ class Airfoil:
                 print(f"iteration {i}, t = {t1}, f = {f1}, err = {err}")
                 i = i+1
         return t1
+
+    def le(self, tol=1e-13, relax=0.9):
+        """
+        Find the position of the leading-edge, defined as the position where
+        the airfoil surface is vertical.
+        """
+
+        # The LE should be around 0.5
+        t0 = np.array([0.5])
+        # we want ny = 0 (horizontal normal)
+
+        def err(t):
+            return self.normal(t)[:, 1]
+
+        return optimize.fsolve(err, t0)
+
 
     def is_trigonometric(self):
         """
